@@ -23,23 +23,19 @@ The project includes a React web app, a FastAPI API, and PostgreSQL with the `pg
 ### Requirements
 
 - Docker Desktop (or Docker Engine) with Docker Compose v2
-- A Gemini API key for live AI analysis. You can use the built-in mock provider to explore the app without a key.
+- A Gemini API key for live AI analysis.
 
 ### 1. Configure the environment
 
 Copy the example environment file:
 
 ```powershell
-Copy-Item .env.example .env
+ .env.example .env
 ```
 
-Open `.env` and set `POSTGRES_PASSWORD` to a password of your choice. For a first run without an API key, set:
+Open `.env` and set `POSTGRES_PASSWORD` to a password of your choice. 
 
-```dotenv
-LLM_PROVIDER=mock
-```
-
-For live Gemini analysis, set `LLM_PROVIDER=gemini` and provide your key in `GEMINI_API_KEY`.
+For Gemini analysis, set `LLM_PROVIDER=gemini` and provide your key in `GEMINI_API_KEY`.
 
 ### 2. Start the database and initialize its schema
 
