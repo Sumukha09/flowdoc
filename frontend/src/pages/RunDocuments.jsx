@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getRunDetails } from '../api';
+import { API_BASE_URL, getRunDetails } from '../api';
 import LoadingState from '../components/ui/LoadingState';
 import { ChevronRight, FileText, Download } from 'lucide-react';
 
@@ -59,7 +59,7 @@ export default function RunDocuments() {
               </div>
               <div className="p-3 bg-inset border-t border-line flex justify-between items-center">
                  <span className="text-xs text-green font-medium px-2 py-1 bg-green/10 rounded">Processed</span>
-                 <a href={`http://127.0.0.1:8000/api/v1/runs/${id}/documents/${doc.id}/content`} target="_blank" rel="noreferrer"
+                 <a href={`${API_BASE_URL}/runs/${id}/documents/${doc.id}/content`} target="_blank" rel="noreferrer"
                     className="flex items-center gap-1 text-xs font-medium text-accent hover:underline">
                     Download <Download size={12} />
                  </a>

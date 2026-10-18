@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import useRunDetail from '../hooks/useRunDetail';
+import { API_BASE_URL } from '../api';
 import TaskRows from '../components/ui/TaskRows';
 import LoadingState from '../components/ui/LoadingState';
 import { AlertCircle, ChevronRight, FilePlus, Download } from 'lucide-react';
@@ -235,7 +236,7 @@ export default function RunDetail() {
               
               {state.status === 'completed' && (
                 <div className="pt-4 border-t border-line">
-                  <a href={`http://127.0.0.1:8000/api/v1/runs/${id}/report`} target="_blank" rel="noreferrer" 
+                  <a href={`${API_BASE_URL}/runs/${id}/report`} target="_blank" rel="noreferrer" 
                      className="w-full text-center flex items-center justify-center gap-2 px-3 py-2.5 bg-accent text-white rounded-control font-semibold text-sm hover:bg-accent-ink transition-colors">
                     <Download size={15} aria-hidden="true" />
                     <span>Download Deliverable</span>
