@@ -4,7 +4,7 @@ FlowDocs is a document compliance review workspace. Give it source documents and
 
 ### What the app does
 
-1. **Start a review:** upload PDF, TXT, or DOCX files and enter the compliance rules for this review.
+1. **Start a review:** upload PDF, TXT,  files and enter the compliance rules for this review.
 2. **Process the documents:** FlowDocs extracts claims, analyzes their supporting evidence, and runs verification against the supplied rules. The run timeline shows progress through each stage.
 3. **Inspect the results:** browse the processed documents, extracted claims, and findings. Evidence snippets link findings back to their source documents so reviewers can check the context.
 4. **Make the decision:** a human reviews each pending finding, approves or rejects it, and can leave a comment. The review gate holds the workflow until the findings are handled.
