@@ -16,7 +16,7 @@ FlowDocs is a review aid: AI-generated findings are presented for human assessme
 
 ### What it uses
 
-The project includes a React web app, a FastAPI API, and PostgreSQL with the `pgvector` extension. For AI analysis, it supports Google Gemini; a deterministic mock provider is available for trying the workflow without an API key.
+The project includes a React web app, a FastAPI API, and PostgreSQL with the `pgvector` extension. For AI analysis, it supports Google Gemini.
 
 ## Run locally with Docker
 
