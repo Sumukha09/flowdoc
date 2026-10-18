@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-hover: var(--hover);
+  --color-hover-2: var(--hover-2);
+  --color-inset: var(--inset);
+  --color-field: var(--field);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-tint: var(--accent-tint);
+  --color-accent-ink: var(--accent-ink);
+  --color-green: var(--green);
+  --color-orange: var(--orange);
+  --color-red: var(--red);
+  --shadow-btn: 0 1px 2px rgba(30, 41, 59, .08), inset 0 1px 0 rgba(255,255,255,.35);
+  --shadow-card: 0 2px 5px rgba(30, 41, 59, .035), 0 12px 30px rgba(30, 41, 59, .045);
+  --radius-control: 8px;
+  --radius-card: 12px;
+}
+
+:root {
+  --ink: #11291a;
+  --ink-2: #294b35;
+  --ink-3: #4f7058;
+  --canvas: #c5ddc7;
+  --surface: #d9ead9;
+  --hover: #cde3ce;
+  --hover-2: #bdd9c0;
+  --inset: #cde2cf;
+  --field: #bed8c1;
+  --line: #a9c9ad;
+  --line-strong: #8db795;
+  --accent: #21663a;
+  --accent-tint: #c0ddc3;
+  --accent-ink: #174d2c;
+  --green: #21663a;
+  --orange: #647a32;
+  --red: #b84d47;
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; margin: 0; }
+body { background: var(--canvas); color: var(--ink); font-family: var(--font-sans); }
+button, input, textarea, select { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+a { color: inherit; }
+::selection { color: #fff; background: #176b5b; }
+:focus-visible { outline: 3px solid #8bcbbb; outline-offset: 2px; }
+
+.rounded-control { border-radius: var(--radius-control); }
+.rounded-card { border-radius: var(--radius-card); }
+.shadow-btn { box-shadow: var(--shadow-btn); border: 1px solid var(--line); }
+.shadow-card { box-shadow: var(--shadow-card); border: 1px solid var(--line); }
+.primitive-card-pad { padding: 18px; }
+.primitive-card-footer { padding: 13px 18px; border-top: 1px solid var(--line); background: var(--inset); }
+.primitive-icon-button { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-control); }
+.animated-underline { text-decoration: underline; text-decoration-color: transparent; transition: text-decoration-color .2s; }
+.animated-underline:hover { text-decoration-color: currentColor; }
+
+.app-sidebar { background: var(--surface); }
+.sidebar-links { scrollbar-width: thin; }
+.app-main { min-width: 0; background: var(--canvas); }
+.app-main > div { animation: page-in .32s ease both; }
+.app-main h1 { letter-spacing: -.035em; }
+.app-main h2, .app-main h3 { letter-spacing: -.015em; }
+.app-main input, .app-main textarea, .app-main select { border-radius: 10px; }
+.app-main table, .app-main [style*="gridTemplateColumns"] { min-width: 0; }
+.app-main a { transition: color .16s ease, background-color .16s ease; }
+
+@keyframes page-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pixel-on { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
+@keyframes shimmer-text { 0% { background-position: 200% center; } 100% { background-position: -200% center; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pop-in { 0% { opacity: 0; transform: scale(.9); } 70% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d4ded6; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #b8c8bd; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* FlowDocs evidence desk: a quiet paper workspace framed by a deep pine rail. */
+.app-shell { background: var(--canvas); }
+.app-sidebar {
+  background: #172923;
+  border-right: 0;
+  color: #eef4ef;
+}
+.sidebar-brand { border-color: rgba(236, 246, 237, .12); }
+.sidebar-mark { color: #19332b; background: #b6d77a; box-shadow: none; }
+.sidebar-caption { color: #9eafa5; font-size: 9px; font-weight: 600; letter-spacing: .14em; }
+.sidebar-group-label { color: #83968a; font-size: 9px; letter-spacing: .15em; padding-left: 11px; }
+.sidebar-link {
+  min-height: 40px;
+  color: #c0cdc4;
+  border-radius: 7px;
+  font-size: 12.5px;
+  transition: background-color .16s ease, color .16s ease;
+}
+.sidebar-link:hover { color: #fff; background: rgba(255,255,255,.07); }
+.sidebar-link.is-active { color: #d5eea3; background: rgba(182,215,122,.13); box-shadow: inset 2px 0 #b6d77a; }
+.sidebar-link svg { opacity: .8; }
+.sidebar-link.is-active svg { opacity: 1; }
+.app-main { background: var(--canvas); }
+.app-main > div { animation: none; }
+.app-main h1 { line-height: 1.12; letter-spacing: -.055em; font-weight: 600; }
+.app-main h2 { letter-spacing: -.035em; }
+.app-statusbar { min-height: 32px; border-color: var(--line); background: #b9d4bc; color: #3e6247; font-size: 10px; letter-spacing: .06em; }
+.shadow-card { box-shadow: 0 2px 3px rgba(20, 40, 31, .025), 0 9px 22px rgba(20, 40, 31, .035); border-color: var(--line); }
+.shadow-btn { box-shadow: 0 1px 2px rgba(20, 40, 31, .09); }
+.rounded-card { border-radius: var(--radius-card); }
+.app-main .bg-surface.rounded-card { border-color: var(--line); }
+.app-main button, .app-main a { outline-offset: 3px; }
+.app-main :focus-visible, .sidebar-link:focus-visible { outline: 2px solid #88aa56; outline-offset: 2px; }
+.app-main input, .app-main textarea, .app-main select { border-color: var(--line-strong); }
+.app-main input::placeholder, .app-main textarea::placeholder { color: #89958e; }
+.app-main .overflow-x-auto.rounded-card { border: 1px solid var(--line); }
+.app-main .overflow-x-auto.rounded-card > div > div:first-child { min-height: 42px; background: #cde2cf; color: #426449; text-transform: uppercase; letter-spacing: .075em; font-size: 10px; }
+.app-main .overflow-x-auto.rounded-card .grid > div > div { min-height: 48px; }
+.app-main .overflow-x-auto.rounded-card .grid > div > div:hover { background: #cde2cf; }
+.app-main a.bg-accent, .app-main button.bg-accent { color: #f5fff5; }

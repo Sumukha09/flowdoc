@@ -1,141 +1,116 @@
 # FlowDocs
 
-FlowDocs is a document processing application powered by LangGraph, LLMs (Gemini), and PostgreSQL (pgvector). It provides a full-stack experience (FastAPI backend + React frontend) to ingest documents, extract claims, analyze evidence against compliance rules, and allow human review.
+FlowDocs is a document compliance review workspace. Give it source documents and the rules or policy you want to check; it processes the material, surfaces claims and potential compliance findings, and lets a human reviewer decide what belongs in the final report.
 
-## Architecture Stack
+### What the app does
 
-- **Language**: Python 3.12, JavaScript (React)
-- **Web framework**: FastAPI (Backend), Vite/React (Frontend)
-- **Database**: PostgreSQL 16 with the `pgvector` extension
-- **ORM**: SQLAlchemy 2.x with `psycopg[binary]`
-- **Migrations**: Alembic
-- **Containerization**: Docker Compose
+1. **Start a review:** upload PDF, TXT, or DOCX files and enter the compliance rules for this review.
+2. **Process the documents:** FlowDocs extracts claims, analyzes their supporting evidence, and runs verification against the supplied rules. The run timeline shows progress through each stage.
+3. **Inspect the results:** browse the processed documents, extracted claims, and findings. Evidence snippets link findings back to their source documents so reviewers can check the context.
+4. **Make the decision:** a human reviews each pending finding, approves or rejects it, and can leave a comment. The review gate holds the workflow until the findings are handled.
+5. **Produce and trace the outcome:** the deliverable includes approved findings and evidence references. The run also provides an action history and model usage and cost information.
 
----
+You can return to previous runs, add documents to a run, and resume a run that failed or was interrupted. The overview brings together run status, processed documents, findings, and pending reviews.
 
-## 🚀 Getting Started
+FlowDocs is a review aid: AI-generated findings are presented for human assessment, and the reviewer’s decisions shape the deliverable.
 
-Anyone can completely run this application from scratch using Docker. Follow the steps below.
+### What it uses
 
-### 1. Prerequisites
+The project includes a React web app, a FastAPI API, and PostgreSQL with the `pgvector` extension. For AI analysis, it supports Google Gemini; a deterministic mock provider is available for trying the workflow without an API key.
 
-- **Docker** 24+
-- **Docker Compose** v2
+## Run locally with Docker
 
-*(Python 3.12 and Node.js are only required if you choose to run the services outside of Docker.)*
+### Requirements
 
-### 2. Environment Variables
+- Docker Desktop (or Docker Engine) with Docker Compose v2
+- A Gemini API key for live AI analysis. You can use the built-in mock provider to explore the app without a key.
 
-Before starting the app, you need to configure your environment variables. 
+### 1. Configure the environment
 
-1. Copy the provided `.env.example` file to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
+Copy the example environment file:
 
-2. Open `.env` and fill in the required values. Below is a full explanation of the environment variables:
+```powershell
+Copy-Item .env.example .env
+```
 
-| Variable | Description | Default / Required |
-|----------|-------------|--------------------|
-| `POSTGRES_HOST` | Hostname for PostgreSQL. | `localhost` (Docker overrides this) |
-| `POSTGRES_PORT` | Port for PostgreSQL. | `5432` |
-| `POSTGRES_DB` | Name of the database. | `flowdocs` |
-| `POSTGRES_USER` | Database user. | `flowdocs` |
-| `POSTGRES_PASSWORD` | Secure password for the DB. | **Required** |
-| `LLM_PROVIDER` | Which LLM to use. | `gemini` |
-| `GEMINI_API_KEY` | Your Google Gemini API Key. |
-| `GEMINI_MODEL` | The specific Gemini model to use. | `gemini-3.1-flash-lite` |
-| `GEMINI_MAX_RPM` | Rate limit for Gemini API. | `10` |
-| `LLM_TOKEN_BUDGET` | Max token budget for operations. | `50000` |
-| `APP_ENV` | Application environment. | `local` |
-| `APP_HOST` | Host for the backend. | `0.0.0.0` |
-| `APP_PORT` | Port for the backend. | `8000` |
+Open `.env` and set `POSTGRES_PASSWORD` to a password of your choice. For a first run without an API key, set:
 
-### 3. Start the Application
+```dotenv
+LLM_PROVIDER=mock
+```
 
-You can start the entire stack (Database, Backend, and Frontend) in one command:
+For live Gemini analysis, set `LLM_PROVIDER=gemini` and provide your key in `GEMINI_API_KEY`.
 
-Using Docker Compose:
+### 2. Start the database and initialize its schema
+
+Run these commands from the project root. The database must be ready and migrated before the API starts.
+
+```bash
+docker compose up -d postgres
+docker compose run --rm backend alembic upgrade head
+```
+
+### 3. Start the web app and API
+
 ```bash
 docker compose up -d --build
 ```
 
+Open the app at **http://localhost:5173**. The API documentation is at **http://localhost:8000/docs**.
 
-### 4. Apply Database Migrations
+To check that the API and database are connected, open **http://localhost:8000/health**. A healthy response looks like:
 
-Once the containers are running, you MUST apply the database schema migrations. This also enables the `pgvector` extension.
-
-Run the following command:
-```bash
-docker compose exec backend alembic upgrade head
-```
-*(Or using the Makefile: `make migrate`)*
-
-### 5. Access the Application
-
-- **Frontend Application**: [http://localhost:5173](http://localhost:5173)
-- **Backend API Docs (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Backend Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
-
----
-
-## 🤖 Model Context Protocol (MCP) Server
-
-FlowDocs includes a built-in MCP server that allows AI agents (such as Claude Desktop or other MCP clients) to programmatically interact with the workflow (start runs, approve findings, get reports, etc.).
-
-### Running MCP Locally (Standalone)
-
-To run the MCP server directly via standard I/O (stdio transport), you need a local Python environment:
-
-1. Create and activate a virtual environment:
-   ```bash
-   python -m venv .venv
-   # Windows: .venv\Scripts\activate
-   # Mac/Linux: source .venv/bin/activate
-   ```
-2. Run the MCP Server:
-   ```bash
-   python run_mcp.py
-   ```
-
-### Configuring Claude Desktop (or other clients)
-
-To connect an AI client to this MCP server, you configure the client to spawn the `run_mcp.py` script. 
-
-Example configuration (`mcp_config.json` or Claude config):
 ```json
-{
-  "mcpServers": {
-    "flowdocs-mcp": {
-      "command": "C:\\absolute\\path\\to\\flowdocs\\.venv\\Scripts\\python.exe",
-      "args": ["C:\\absolute\\path\\to\\flowdocs\\backend\\run_mcp.py"],
-      "env": {
-        "POSTGRES_USER": "flowdocs",
-        "POSTGRES_DB": "flowdocs",
-        "POSTGRES_PASSWORD": "your_secure_password_here"
-      }
-    }
-  }
-}
+{"status":"ok","database":"ok"}
 ```
-*(Note: Ensure paths point to your local absolute paths and your `.venv` python executable. Mac/Linux will use `python` or `python3` instead of `.exe`)*
 
-### Available MCP Tools
+## Useful commands
 
-Once connected, your AI agent can use the following tools:
-- `create_run(file_paths, compliance_rules)`: Start a new document processing run.
-- `get_run(run_id)`: Fetch basic status of a run.
-- `get_run_state(run_id)`: Retrieve the granular workflow execution trace.
-- `resume_run(run_id)`: Resume a stalled or failed workflow run.
-- `add_documents(run_id, file_paths)`: Incrementally add new documents to a run.
-- `get_findings(run_id)`: List all compliance findings for a run.
-- `review_finding(run_id, finding_id, decision, comment)`: Programmatically approve/reject a finding.
-- `get_report(run_id)`: Retrieve the final compliance report metadata.
+Run these from the project root:
 
----
+| Task | Command |
+| --- | --- |
+| View running services | `docker compose ps` |
+| Follow API logs | `docker compose logs -f backend` |
+| Follow all logs | `docker compose logs -f` |
+| Apply new database migrations | `docker compose run --rm backend alembic upgrade head` |
+| Stop services and keep database data | `docker compose down` |
+| Stop services and delete database data | `docker compose down -v` |
 
-## 🛑 Useful Commands
+The last command permanently deletes the local PostgreSQL volume, including saved runs and documents.
 
-- **Stop Services**: `docker compose down` (or `make down`)
-- **View Backend Logs**: `docker compose logs -f backend` (or `make logs`)
-- **Destroy Everything** (including database volumes): `docker compose down -v` (or `make clean`)
+## Run services without Docker
+
+Docker Compose is the recommended setup because it provides PostgreSQL and `pgvector`. For a host-based setup, install PostgreSQL with `pgvector`, Python 3.12+, and Node.js 20+ first. Configure `.env` with a database host reachable from your machine, then run the API and frontend in separate terminals:
+
+```bash
+cd backend
+python -m venv .venv
+```
+
+Activate it, then install the backend, migrate the database, and start the API. On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1`; on macOS or Linux, use `source .venv/bin/activate`.
+
+```bash
+python -m pip install -e ".[dev]"
+alembic upgrade head
+uvicorn app.main:app --reload
+```
+
+In another terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend runs at **http://localhost:5173**. The API runs at **http://localhost:8000**.
+
+## Project layout
+
+```text
+backend/    FastAPI API, document workflow, database models, and migrations
+frontend/   React web application
+docker-compose.yml  Local PostgreSQL, API, and frontend services
+.env.example        Local configuration template
+```

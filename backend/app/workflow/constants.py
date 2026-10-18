@@ -1,0 +1,17 @@
+
+
+NODE_INGEST = "ingest"
+NODE_EXTRACT = "extract"
+NODE_ANALYZE = "analyze"
+NODE_VERIFY = "verify"
+NODE_APPROVAL = "approval"
+NODE_COMPLETE = "complete"
+
+EXPECTED_NODES = (
+    NODE_INGEST,
+    NODE_EXTRACT,
+    NODE_ANALYZE,
+    NODE_VERIFY,
+    NODE_APPROVAL,
+    NODE_COMPLETE,
+)
