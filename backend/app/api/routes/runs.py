@@ -1,6 +1,7 @@
 """API routes for managing workflow runs."""
 from __future__ import annotations
 
+import os
 import uuid
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, UploadFile, File
@@ -34,6 +35,17 @@ from app.workflow.graph import compile_workflow
 
 router = APIRouter(prefix="/runs", tags=["runs"])
 
+SUPPORTED_DOCUMENT_EXTENSIONS = {".pdf", ".txt"}
+
+
+def _validate_document_name(name: str) -> None:
+    if os.path.splitext(name)[1].lower() not in SUPPORTED_DOCUMENT_EXTENSIONS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only PDF and plain-text (.txt) files are supported.",
+        )
+
+
 @router.post(
     "",
     response_model=RunStateResponse,
@@ -51,13 +63,17 @@ def create_run(
     file_paths = []
     
     for f in request.files:
+        candidate_name = f.file_name if f.file_content_base64 else f.file_path
+        if candidate_name:
+            _validate_document_name(os.path.basename(candidate_name))
+
         path = f.file_path
         if f.file_content_base64:
             import base64
-            import os
             
             content = base64.b64decode(f.file_content_base64)
             name = os.path.basename(f.file_name or "uploaded_doc.pdf")
+            _validate_document_name(name)
             upload_dir = os.path.join(os.getcwd(), "uploads", str(uuid.uuid4()))
             os.makedirs(upload_dir, exist_ok=True)
             path = os.path.join(upload_dir, name)
@@ -95,7 +111,6 @@ def add_documents_to_run(
     checkpointer: PostgresSaver = Depends(get_checkpointer),
 ):
     """Upload new documents to an existing run and selectively process them."""
-    import os
     import hashlib
     
     run = get_run(db, run_id)
@@ -114,6 +129,8 @@ def add_documents_to_run(
     for f in files:
         if not f.filename:
             continue
+
+        _validate_document_name(os.path.basename(f.filename))
             
         content = f.file.read()
         if not content:

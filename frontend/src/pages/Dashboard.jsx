@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { stageSupportedDocuments, SUPPORTED_DOCUMENT_ACCEPT } from '../utils/documents';
 
 function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -79,12 +80,9 @@ export default function Dashboard() {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const newFiles = Array.from(e.dataTransfer.files).map(file => ({
-        id: Math.random().toString(36).substr(2, 9),
-        name: file.name,
-        object: file
-      }));
-      setFiles(prev => [...prev, ...newFiles]);
+      const { supported, unsupported } = stageSupportedDocuments(e.dataTransfer.files);
+      if (supported.length) setFiles(prev => [...prev, ...supported]);
+      setError(unsupported.length ? 'Only PDF and TXT files are supported.' : null);
     }
   }, []);
 
@@ -157,20 +155,18 @@ export default function Dashboard() {
               >
                 <UploadCloud className={cn("w-12 h-12 mb-6 transition-colors", isDragging ? "text-brand-500" : "text-slate-600")} />
                 <p className="text-sm text-slate-300 font-bold uppercase tracking-widest mb-2">Click to browse or drag and drop</p>
-                <p className="text-[10px] uppercase text-slate-600 tracking-widest font-mono">SUPPORTED: PDF, TXT, DOCX</p>
+                <p className="text-[10px] uppercase text-slate-600 tracking-widest font-mono">SUPPORTED: PDF, TXT</p>
                 
                 <input 
                   type="file" 
                   multiple
+                  accept={SUPPORTED_DOCUMENT_ACCEPT}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
                   onChange={(e) => {
                     if(e.target.files && e.target.files.length > 0) {
-                      const newFiles = Array.from(e.target.files).map(file => ({
-                        id: Math.random().toString(36).substr(2, 9),
-                        name: file.name,
-                        object: file
-                      }));
-                      setFiles(prev => [...prev, ...newFiles]);
+                      const { supported, unsupported } = stageSupportedDocuments(e.target.files);
+                      if (supported.length) setFiles(prev => [...prev, ...supported]);
+                      setError(unsupported.length ? 'Only PDF and TXT files are supported.' : null);
                       e.target.value = null;
                     }
                   }}
